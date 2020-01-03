@@ -13,8 +13,14 @@
     <textarea id="filename"></textarea>
     <h2>contents</h2>
     <textarea id="textToSend"></textarea>
-
     <button onclick="sendText();">Send via POST</button>
+
+    <h2>File list</h2>
+
+    <textarea id="fileListArea"></textarea>
+    <button onclick="getFileList();">Get file list</button>
+
+    
 
     <script type="text/javascript">
       sendText = () => {
@@ -30,8 +36,18 @@
             fileContents: fileContents
           },
           dataType: "json"
+        });
+      };
+      getFileList = () => {
+        console.log("Getting file list.");
+        $.ajax({
+          type: "GET",
+          url: "http://localhost:3000/listFiles/"
+        }).done( (data) => {
+          $("#fileListArea").val(JSON.stringify(data.entries));
         })
       };
+
     </script>
   </body>
 </html>

@@ -18,25 +18,34 @@ const config = {
 var dbx = new Dropbox(config);
 var mycache = new NodeCache();
 
-module.exports.write = async (req, res, next)=>{
- 
+module.exports.list = async (req, res, next)=>{
   if(!req.session.token){
- 
-    //create a random state value
     let state = crypto.randomBytes(16).toString('hex');
- 
-    //Save state and the session id for 10 mins
     mycache.set(state, req.session.id, 6000);
- 
-    //get authentication URL and redirect
     authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
     res.redirect(authUrl);
-   
   } else {
- 
-    //if a token exists, it can be used to access Dropbox resources
     dbx.setAccessToken(req.session.token);
-    console.log(req.body);
+    dbx.filesListFolder({
+      path: ''
+    }).then( (data) => {
+      console.log(data);
+      res.json(data);
+    }).catch((error) => {
+      console.log(error);
+    });
+    dbx.setAccessToken(null); //clean up token
+  }
+}
+
+module.exports.write = async (req, res, next)=>{
+  if(!req.session.token){
+    let state = crypto.randomBytes(16).toString('hex');
+    mycache.set(state, req.session.id, 6000);
+    authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
+    res.redirect(authUrl);
+  } else {
+    dbx.setAccessToken(req.session.token);
     dbx.filesUpload({
       path: `/${req.body.fileName.toString()}`,
       contents: req.body.fileContents,
@@ -44,13 +53,11 @@ module.exports.write = async (req, res, next)=>{
       autorename: false
     }).then( (data) => {
       console.log(data);
-      res.render('index', { title: "file uploaded", dropbox: "success!"});
+      res.json({ status: "success"});
     }).catch( (error) => {
       console.log(error);
     });
-
     dbx.setAccessToken(null); //clean up token
-    
   }
 }
  

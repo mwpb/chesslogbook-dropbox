@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="javascripts/jquery.js"></script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+    <h2>filename</h2>
+    <textarea id="filename"></textarea>
+    <h2>contents</h2>
+    <textarea id="textToSend"></textarea>
+
+    <button onclick="sendText();">Send via POST</button>
+
+    <script type="text/javascript">
+      sendText = () => {
+        uploadFile($("#filename").val(), $("#textToSend").val());
+      }
+      uploadFile = (fileName, fileContents) => {
+        console.log(`Uploading file named ${fileName}.`);
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:3000/write/",
+          data: {
+            fileName: fileName,
+            fileContents: fileContents
+          },
+          dataType: "json"
+        })
+      };
+    </script>
+  </body>
+</html>

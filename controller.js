@@ -80,8 +80,33 @@ module.exports.write = async (req, res, next)=>{
     dbx.setAccessToken(null); //clean up token
   }
 }
- 
+
 module.exports.home = async (req, res, next)=>{
+  if (!req.session.token){
+    res.render('index');
+  } else {
+    dbx.setAccessToken(req.session.token);
+    try{
+      let account_details = await dbx.usersGetCurrentAccount();
+      let display_name = account_details.name.display_name;
+      let r = null;
+      dbx.filesListFolder({path: ''})
+        .then(function(response) {
+          res.render('app');
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+      dbx.setAccessToken(null); //clean up token
+ 
+    }catch(error){
+      dbx.setAccessToken(null);
+      next(error);
+    }
+  }
+}
+ 
+module.exports.app = async (req, res, next)=>{
   if (!req.session.token){
     let state = crypto.randomBytes(16).toString('hex');
     mycache.set(state, req.session.id, 6000);

@@ -5,9 +5,25 @@
     <title>chesslogbook</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="javascripts/jquery.js"></script>
+    <script src="javascripts/viewUpdater.js"></script>
     <script src="javascripts/dropboxUtils.js"></script>
+    <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
+    <script type="text/javascript" src="DataTables/datatables.min.js"></script>
   </head>
   <body>
-    This is app.ejs.
+    <h1>File contents</h1>
+    <div id="fileContents"></div>
+    <h1>File list</h1>
+    <table id="fileList"></table>
+    <script type="text/javascript">
+      var chesslogbook = {};
+      chesslogbook.fileList = [];
+      var datatable = $("#fileList").DataTable({
+        data: chesslogbook.fileList,
+        columns: [{
+           title: "File name"
+        }]
+      });
+    </script>
   </body>
 </html>

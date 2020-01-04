@@ -3,7 +3,7 @@ dropboxUtils.uploadFile = (fileName, fileContents) => {
 	console.log(`Uploading file named ${fileName}.`);
 	$.ajax({
 	  type: "POST",
-	  url: "http://localhost:3000/write/",
+	  url: "./write/",
 	  data: {
 	    fileName: fileName,
 	    fileContents: fileContents
@@ -15,17 +15,17 @@ dropboxUtils.getFileList = () => {
 	console.log("Getting file list.");
 	$.ajax({
 	  type: "GET",
-	  url: "http://localhost:3000/listFiles/"
+	  url: "./listFiles/"
 	}).done( (data) => {
-	  $("#fileListArea").val(JSON.stringify(data.entries));
+	  viewUpdater.updateFileList(data);
 	})
 };
 dropboxUtils.getFile = (fileName) => {
 	console.log(`Getting file named ${fileName}.`);
 	$.ajax({
 	  type: "GET",
-	  url: `http://localhost:3000/file/${fileName}`
+	  url: `./file/${fileName}`
 	}).done( (data) => {
-	  alert(data);
+	  viewUpdater.updateFile(data);
 	});
 }

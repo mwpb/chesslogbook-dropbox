@@ -24,6 +24,9 @@
            title: "File name"
         }]
       });
+      $("tbody", "#fileList").on("click", "td", function() {
+        dropboxUtils.getFile(this.innerText);
+      });
     </script>
   </body>
 </html>

@@ -6,7 +6,6 @@ fetch = require('isomorphic-fetch');
  
 //Redirect URL to pass to Dropbox. Has to be whitelisted in Dropbox settings
 const OAUTH_REDIRECT_URL="http://localhost:3000/auth";
-// '<a class="vglnk" href="http://localhost:3000/auth" rel="nofollow"><span>http</span><span>://</span><span>localhost</span><span>:</span><span>3000</span><span>/</span><span>auth</span></a>';
  
 //Dropbox configuration
 const config = {
@@ -18,12 +17,16 @@ const config = {
 var dbx = new Dropbox(config);
 var mycache = new NodeCache();
 
-module.exports.file = async (req, res, next)=>{
-  if(!req.session.token){
-    let state = crypto.randomBytes(16).toString('hex');
+var authenticate = (req, res) => {
+  let state = crypto.randomBytes(16).toString('hex');
     mycache.set(state, req.session.id, 6000);
     authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
     res.redirect(authUrl);
+}
+
+module.exports.file = async (req, res, next)=>{
+  if(!req.session.token){
+    authenticate(req, res);
   } else {
     dbx.setAccessToken(req.session.token);
     dbx.filesDownload({
@@ -40,10 +43,7 @@ module.exports.file = async (req, res, next)=>{
 
 module.exports.list = async (req, res, next)=>{
   if(!req.session.token){
-    let state = crypto.randomBytes(16).toString('hex');
-    mycache.set(state, req.session.id, 6000);
-    authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
-    res.redirect(authUrl);
+    authenticate(req, res);
   } else {
     dbx.setAccessToken(req.session.token);
     dbx.filesListFolder({
@@ -60,10 +60,7 @@ module.exports.list = async (req, res, next)=>{
 
 module.exports.write = async (req, res, next)=>{
   if(!req.session.token){
-    let state = crypto.randomBytes(16).toString('hex');
-    mycache.set(state, req.session.id, 6000);
-    authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
-    res.redirect(authUrl);
+    authenticate(req, res);
   } else {
     dbx.setAccessToken(req.session.token);
     dbx.filesUpload({
@@ -108,10 +105,7 @@ module.exports.home = async (req, res, next)=>{
  
 module.exports.app = async (req, res, next)=>{
   if (!req.session.token){
-    let state = crypto.randomBytes(16).toString('hex');
-    mycache.set(state, req.session.id, 6000);
-    authUrl = dbx.getAuthenticationUrl(OAUTH_REDIRECT_URL, state, 'code');
-    res.redirect(authUrl);
+    authenticate(req, res);
   } else {
     dbx.setAccessToken(req.session.token);
     try{

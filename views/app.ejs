@@ -5,19 +5,34 @@
     <title>chesslogbook</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="javascripts/jquery.js"></script>
+    <script src="javascripts/chess.js"></script>
+    <script src="js/chessboard-1.0.0.min.js"></script>
     <script src="javascripts/viewUpdater.js"></script>
     <script src="javascripts/dropboxUtils.js"></script>
+    <script src="javascripts/chessBoardUtils.js"></script>
     <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/chessboard-1.0.0.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <script type="text/javascript" src="DataTables/datatables.min.js"></script>
   </head>
   <body>
-    <h1>File contents</h1>
-    <div id="fileContents"></div>
+    <div id="colContainer" class="row">
+      <div class="item"><div id="board" style="width:400px"></div></div>
+      <div class="item">
+        <h1>File contents</h1>
+        <div><pre id="fileContents"></pre></div>
+      </div>
+    </div>
+    
+    
     <h1>File list</h1>
     <table id="fileList"></table>
     <script type="text/javascript">
       var chesslogbook = {};
       chesslogbook.fileList = [];
+      chesslogbook.moves = [];
+      chesslogbook.chess = new Chess();
+      chesslogbook.board = Chessboard("board", "start");
       var datatable = $("#fileList").DataTable({
         data: chesslogbook.fileList,
         columns: [{
@@ -27,6 +42,7 @@
       $("tbody", "#fileList").on("click", "td", function() {
         dropboxUtils.getFile(this.innerText);
       });
+      dropboxUtils.getFileList();
     </script>
   </body>
 </html>

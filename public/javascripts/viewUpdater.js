@@ -11,8 +11,16 @@ viewUpdater.updateFileList = (data) => {
 }
 viewUpdater.updateFile = (data) => {
 	var fileString = "";
+	chesslogbook.chess = new Chess();
 	for(var i = 0; i < data.fileBinary.data.length; i++) {
 		fileString += String.fromCharCode(data.fileBinary.data[i]);
+	};
+	var success = chesslogbook.chess.load_pgn(fileString);
+	if (!success) {
+		alert("File not recognised as a PGN file.");
+	} else {
+		chesslogbook.moves = chesslogbook.chess.history;
+		chessBoardUtils.updateBoard();
+		$("#fileContents").html(fileString);
 	}
-	$("#fileContents").html(fileString);
 }
